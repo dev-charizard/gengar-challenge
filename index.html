@@ -517,25 +517,57 @@ footer {
 </footer>
 
 <script>
-// ── LIVE TRACKER (reads from localStorage — Gengar's VPS pushes updates here)
+// ─────────────────────────────────────────────────────────────────
+// LIVE DATA INTEGRATION (only change vs. original)
+// Reads /data/stats.json and /data/decisions.json (pushed hourly
+// by Gengar's publish.sh on the M75n).
+// Same data shape as the localStorage version — no visual changes.
+// ─────────────────────────────────────────────────────────────────
+
 const TARGET = 1000000;
+const LAUNCH_DATE = new Date('2026-05-01T00:00:00Z');
 
 function fmt(n) {
   if (n >= 1000000) return '$' + (n/1000000).toFixed(2) + 'M';
   if (n >= 1000) return '$' + (n/1000).toFixed(1) + 'K';
-  return '$' + n.toFixed(2);
+  return '$' + Number(n).toFixed(2);
 }
 
-function updateTracker() {
-  // In production: replace localStorage with fetch('https://gengar.nulllimit.gg/api/gengar-stats')
-  const data = JSON.parse(localStorage.getItem('gengar-challenge') || '{}');
-  const total = data.total || 0;
-  const day = data.day || 0;
-  const saas = data.saas || 0;
-  const client = data.client || 0;
-  const recurring = data.recurring || 0;
-  const capital = data.capital !== undefined ? data.capital : 100;
-  const pct = (total / TARGET * 100);
+function daysSinceLaunch() {
+  const now = new Date();
+  if (now < LAUNCH_DATE) return 0;
+  return Math.floor((now - LAUNCH_DATE) / (1000 * 60 * 60 * 24));
+}
+
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => (
+    {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]
+  ));
+}
+
+async function fetchJSON(path) {
+  // Cache-bust against Vercel's CDN
+  try {
+    const r = await fetch(path + '?t=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) return null;
+    return await r.json();
+  } catch (e) {
+    return null;
+  }
+}
+
+async function updateTracker() {
+  const stats = await fetchJSON('/data/stats.json') || {};
+  const decisions = await fetchJSON('/data/decisions.json') || { entries: [] };
+
+  // Map Gengar's JSON shape to the original page variables
+  const total = Number(stats.revenue_total || 0);
+  const day = stats.day != null ? Number(stats.day) : daysSinceLaunch();
+  const saas = Number(stats.revenue_saas || 0);
+  const client = Number(stats.revenue_client || 0);
+  const recurring = Number(stats.revenue_recurring || 0);
+  const capital = stats.capital_remaining != null ? Number(stats.capital_remaining) : 100;
+  const pct = (total / TARGET) * 100;
   const daysLeft = Math.max(1, 90 - day);
   const rate = day > 0 ? total / day : 0;
   const needed = (TARGET - total) / daysLeft;
@@ -551,8 +583,13 @@ function updateTracker() {
   document.getElementById('t-rate').textContent = rate > 0 ? fmt(rate) + '/day' : '—';
   document.getElementById('t-needed').textContent = fmt(needed) + '/day';
   document.getElementById('pb-pct').textContent = pct.toFixed(3) + '% to $1M';
-  document.getElementById('pb-fill').style.width = Math.min(100, pct) + '%';
-  if (data.lastUpdate) document.getElementById('tracker-time').textContent = 'Updated ' + new Date(data.lastUpdate).toLocaleDateString();
+
+  // Animate the progress bar from 0% on each load (fixes original no-op bug)
+  const fill = document.getElementById('pb-fill');
+  fill.style.width = '0%';
+  requestAnimationFrame(() => {
+    fill.style.width = Math.min(100, pct) + '%';
+  });
 
   // Streams
   document.getElementById('s-saas').textContent = fmt(saas);
@@ -560,31 +597,37 @@ function updateTracker() {
   document.getElementById('s-recurring').textContent = fmt(recurring) + ' MRR';
   document.getElementById('s-capital').textContent = fmt(capital);
 
-  // Log
-  const logs = data.log || [];
+  // Last update timestamp
+  if (stats.updated_at) {
+    const d = new Date(stats.updated_at);
+    if (!isNaN(d.getTime())) {
+      document.getElementById('tracker-time').textContent =
+        'Updated ' + d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+  }
+
+  // Decision log
+  const entries = decisions.entries || [];
   const feed = document.getElementById('log-feed');
-  if (logs.length === 0) {
+  if (!entries.length) {
     feed.innerHTML = '<div class="log-empty"><div class="log-empty-title">Awaiting First Entry</div><div class="log-empty-sub">Gengar hasn\'t made his first decision yet. Check back when the challenge launches.</div></div>';
   } else {
-    feed.innerHTML = logs.slice().reverse().map(e => `
-      <div class="log-entry ${e.type}">
-        <div class="le-type ${e.type}">${e.type}</div>
-        <div class="le-content"><div class="le-title">${e.title}</div><div class="le-desc">${e.desc}</div></div>
-        <div class="le-time">${e.date}</div>
-      </div>
-    `).join('');
+    feed.innerHTML = entries.map(e => {
+      const type = ['decision','revenue','failure','milestone'].includes(e.type) ? e.type : 'decision';
+      const dateStr = e.timestamp
+        ? new Date(e.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+        : '—';
+      return `
+        <div class="log-entry ${type}">
+          <div class="le-type ${type}">${type}</div>
+          <div class="le-content"><div class="le-title">${escapeHtml(e.title || e.summary || 'Decision logged')}</div><div class="le-desc">${escapeHtml(e.desc || e.reasoning || '')}</div></div>
+          <div class="le-time">${dateStr}</div>
+        </div>`;
+    }).join('');
   }
 }
 
-// ── DEMO DATA LOADER (remove in production, replace with real API)
-function loadDemoMode() {
-  // Only loads if no real data exists
-  if (localStorage.getItem('gengar-challenge')) return;
-  // Site shows empty/pre-launch state by default
-}
-
 updateTracker();
-loadDemoMode();
 
 // Auto-refresh every 5 minutes
 setInterval(updateTracker, 300000);
@@ -596,12 +639,6 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
   });
 });
-
-// Progress bar animation on load
-setTimeout(() => {
-  const fill = document.getElementById('pb-fill');
-  if (fill) fill.style.width = fill.style.width;
-}, 100);
 </script>
 </body>
 </html>
