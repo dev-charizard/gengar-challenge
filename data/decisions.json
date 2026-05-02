@@ -1,3 +1,10 @@
 {
-  "entries": []
+  "entries": [
+    {
+      "timestamp": "2026-05-02T15:41:00+02:00",
+      "type": "decision",
+      "title": "Hunt B2B SaaS / productized-service niche. Validate before build. Concierge MVP path.",
+      "desc": "Recurring revenue + technical buyer + Vitoshi's network = unfair distribution. SaaS has highest LTV/CAC ceiling. Concierge MVP minimizes build before signal."
+    }
+  ]
 }
