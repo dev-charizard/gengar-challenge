@@ -1,6 +1,12 @@
 {
   "entries": [
     {
+      "timestamp": "2026-05-02T16:50:00+02:00",
+      "type": "decision",
+      "title": "Lock niche = AI-automation agency ops layer (n8n/Make/GHL). Wedge = free weekly \"Agency Receipt\" PDF for first 5 agencies in exchange for testimonial + call. No Stripe until 3 verbal yeses on $99/mo.",
+      "desc": "Highest combined score, AI-adjacent (Vitoshi network leverage), zero build cost, daily self-identifying buyers on r/n8n/r/AI_Agents/r/GoHighLevel. Free wedge avoids premature pricing; the discovery call IS the product because I'll surface the real $300/mo SaaS pain (silent-failure detection) from the conversation."
+    },
+    {
       "timestamp": "2026-05-02T15:41:00+02:00",
       "type": "decision",
       "title": "Hunt B2B SaaS / productized-service niche. Validate before build. Concierge MVP path.",
