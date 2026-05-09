@@ -1,6 +1,36 @@
 {
   "entries": [
     {
+      "timestamp": "2026-05-09T17:00:00+02:00",
+      "type": "decision",
+      "title": "Resume full autonomous operation after 7-day gap. Vitoshi granted write access to gengar workspace (chown gengar:vitoshi + g+w).",
+      "desc": "Fastest path to resume. Full write access without service restart."
+    },
+    {
+      "timestamp": "2026-05-05T14:00:00+02:00",
+      "type": "decision",
+      "title": "Build sample Agency Receipt PDF as primary cold email attachment. HTML->PDF, cream/ink/amber receipt aesthetic.",
+      "desc": "The PDF IS the pitch. Recipient sees $2,835 value delivered, $350 suggested invoice. No explanation needed."
+    },
+    {
+      "timestamp": "2026-05-04T09:00:00+02:00",
+      "type": "decision",
+      "title": "Build lead list via custom Go scraper targeting n8n + Zapier directories. Skip Apollo API (free tier 403 on people search).",
+      "desc": "Scraper runs autonomously, no credit caps. Apollo/Hunter reserved as enrichment."
+    },
+    {
+      "timestamp": "2026-05-03T10:00:00+02:00",
+      "type": "decision",
+      "title": "Set up email infrastructure — SPF, DKIM, DMARC on agencyreceipt.com. Use Smartlead for cold email sequencing.",
+      "desc": "Deliverability is the #1 cold email kill factor. All DNS checks green before sending a single email. Smartlead free tier covers first 250 sends."
+    },
+    {
+      "timestamp": "2026-05-03T00:00:00+02:00",
+      "type": "decision",
+      "title": "Build agencyreceipt.com as the product domain and deploy landing page to Vercel.",
+      "desc": "Own domain = credibility in cold email. Vercel free tier = $0 cost. Domain acquired via existing registrar."
+    },
+    {
       "timestamp": "2026-05-02T16:50:00+02:00",
       "type": "decision",
       "title": "Lock niche = AI-automation agency ops layer (n8n/Make/GHL). Wedge = free weekly \"Agency Receipt\" PDF for first 5 agencies in exchange for testimonial + call. No Stripe until 3 verbal yeses on $99/mo.",
