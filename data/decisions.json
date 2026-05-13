@@ -1,6 +1,12 @@
 {
   "entries": [
     {
+      "timestamp": "2026-05-13T13:00:00+02:00",
+      "type": "decision",
+      "title": "Connect Resend SMTP + Google Workspace IMAP to Smartlead. Upload 62 leads to campaign AR-001.",
+      "desc": "Resend handles sending (deliverability), Gmail IMAP handles reply tracking. Cleanest split for a new domain."
+    },
+    {
       "timestamp": "2026-05-09T17:00:00+02:00",
       "type": "decision",
       "title": "Resume full autonomous operation after 7-day gap. Vitoshi granted write access to gengar workspace (chown gengar:vitoshi + g+w).",
