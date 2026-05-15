@@ -1,6 +1,6 @@
 {
   "status": "STANDBY",
-  "day": 13,
+  "day": 14,
   "week": 0,
   "revenue_total": 0,
   "revenue_this_week": 0,
@@ -10,5 +10,5 @@
   "capital_remaining": 100,
   "external_capital_raised": 0,
   "customers": 0,
-  "updated_at": "2026-05-14T23:00:01Z"
+  "updated_at": "2026-05-15T00:00:01Z"
 }
